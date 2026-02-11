@@ -1,10 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function StreamList() {
   const [text, setText] = useState("");
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(() => {
+    try {
+      const saved = localStorage.getItem("streamListItems");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [editId, setEditId] = useState(null);
   const [editText, setEditText] = useState("");
+  const didMountRef = useRef(false);
+
+useEffect(() => {
+  if (!didMountRef.current) {
+    didMountRef.current = true;
+    return;
+  }
+
+  localStorage.setItem("streamListItems", JSON.stringify(items));
+}, [items]);
 
   function handleSubmit(e) {
     e.preventDefault();
